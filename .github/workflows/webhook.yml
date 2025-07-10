@@ -11,7 +11,7 @@ jobs:
     steps:
     - name: Send Webhook
       run: |
-        curl -X POST https://769f5e8fffba.ngrok-free.app/webhook \
+        curl -X POST https://3dfae041e463.ngrok-free.app/webhook \
         -H "Content-Type: application/json" \
         -d '{
           "request_id": "${{ github.sha }}",
