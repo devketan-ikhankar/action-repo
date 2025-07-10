@@ -1,23 +1,24 @@
-name: GitHub Webhook Trigger
+name: Webhook Sender
 
 on:
   push:
   pull_request:
+    types: [closed]  # Only run when PR is closed
   workflow_dispatch:
 
 jobs:
   send-webhook:
     runs-on: ubuntu-latest
     steps:
-    - name: Send Webhook
-      run: |
-        curl -X POST https://4e161a259df2.ngrok-free.app/webhook \
-        -H "Content-Type: application/json" \
-        -d '{
-          "request_id": "${{ github.sha }}",
-          "author": "${{ github.actor }}",
-          "action": "${{ github.event_name }}",
-          "from_branch": "${{ github.head_ref || github.ref }}",
-          "to_branch": "${{ github.base_ref || github.ref }}",
-          "timestamp": "${{ github.event.head_commit.timestamp || github.event.pull_request.updated_at }}"
-        }'
+      - name: Send webhook
+        run: |
+          curl -X POST https://4e161a259df2.ngrok-free.app/webhook \
+          -H "Content-Type: application/json" \
+          -d '{
+            "request_id": "${{ github.sha }}",
+            "author": "${{ github.actor }}",
+            "action": "${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && 'merge' || github.event_name }}",
+            "from_branch": "${{ github.head_ref || github.ref }}",
+            "to_branch": "${{ github.base_ref || github.ref }}",
+            "timestamp": "${{ github.event.head_commit.timestamp || github.event.pull_request.updated_at }}"
+          }'
